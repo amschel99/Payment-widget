@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rift Finance - Payment Widget Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        .demo-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .demo-link {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 8px 4px;
+            transition: background-color 0.2s;
+        }
+        .demo-link:hover {
+            background: #2563eb;
+        }
+        .code-block {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Rift Finance - Payment Widget Demo</h1>
+        <p>Click the links below to test the payment widget with different invoice configurations:</p>
+        
+        <h3>Test Invoices</h3>
+        
+        <div>
+            <h4>Polygon USDC Payment (15.634771 USDC)</h4>
+            <div class="code-block">
+                Invoice Data: {"chainId":137,"tokenAddress":"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174","amount":15.634771,"address":"0x8daA560362b330b71E893fD1AD1B24A640d8022A"}
+            </div>
+            <a href="/?invoice=eyJjaGFpbklkIjoxMzcsInRva2VuQWRkcmVzcyI6IjB4Mjc5MUJjYTFmMmRlNDY2MUVEODhBMzBDOTlBN2E5NDQ5QWE4NDE3NCIsImFtb3VudCI6MTUuNjM0NzcxLCJhZGRyZXNzIjoiMHg4ZGFBNTYwMzYyYjMzMGI3MUU4OTNmRDFBRDFCMjRBNjQwZDgwMjJBIn0=" class="demo-link">Test Polygon USDC Payment</a>
+        </div>
+
+        <div>
+            <h4>Ethereum USDT Payment (100 USDT)</h4>
+            <div class="code-block">
+                Invoice Data: {"chainId":1,"tokenAddress":"0xdAC17F958D2ee523a2206206994597C13D831ec7","amount":100,"address":"0x742d35Cc6609C7C6f9E4b19f4c0e4B37e95e8e8e"}
+            </div>
+            <a href="/?invoice=eyJjaGFpbklkIjoxLCJ0b2tlbkFkZHJlc3MiOiIweGRBQzE3Rjk1OEQyZWU1MjNhMjIwNjIwNjk5NDU5N0MxM0Q4MzFlYzciLCJhbW91bnQiOjEwMCwiYWRkcmVzcyI6IjB4NzQyZDM1Q2M2NjA5QzdDNmY5RTRiMTlmNGMwZTRCMzdlOTVlOGU4ZSJ9" class="demo-link">Test Ethereum USDT Payment</a>
+        </div>
+
+        <div>
+            <h4>Base ETH Payment (0.05 ETH)</h4>
+            <div class="code-block">
+                Invoice Data: {"chainId":8453,"tokenAddress":null,"amount":0.05,"address":"0x1234567890123456789012345678901234567890"}
+            </div>
+            <a href="/?invoice=eyJjaGFpbklkIjo4NDUzLCJ0b2tlbkFkZHJlc3MiOm51bGwsImFtb3VudCI6MC4wNSwiYWRkcmVzcyI6IjB4MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MCJ9" class="demo-link">Test Base ETH Payment</a>
+        </div>
+
+        <h3>How to Use</h3>
+        <ol>
+            <li>Encode your payment data as base64 JSON</li>
+            <li>Add it as the <code>invoice</code> URL parameter</li>
+            <li>Users will see payment details with QR code</li>
+            <li>Users manually send the exact amount using their wallet</li>
+        </ol>
+
+        <h3>Invoice Structure</h3>
+        <div class="code-block">
+{
+  "chainId": number,  // Chain ID (137 for Polygon, 1 for Ethereum, etc.)
+  "tokenAddress": string | null,  // Token contract address, null for native tokens
+  "amount": number,  // Amount in human readable format
+  "address": "0x..."  // Recipient address
+}
+        </div>
+
+        <h3>Encoding Example (Node.js)</h3>
+        <div class="code-block">
+const invoiceData = {
+  chainId: 137,  // Polygon
+  tokenAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",  // USDC on Polygon
+  amount: 15.634771,
+  address: "0x8daA560362b330b71E893fD1AD1B24A640d8022A"
+};
+
+const encodedInvoice = Buffer.from(JSON.stringify(invoiceData)).toString("base64");
+const widgetUrl = `https://example.com/widget?invoice=${encodedInvoice}`;
+        </div>
+    </div>
+</body>
+</html>
