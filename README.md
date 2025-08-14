@@ -36,10 +36,19 @@ The invoice parameter should be a base64-encoded JSON string with the following 
 
 ### Development
 
+1. **Get a Reown Project ID** (Optional but recommended):
+   - Go to [cloud.reown.com](https://cloud.reown.com)
+   - Create a free account and new project
+   - Copy your Project ID
+   - Create `.env.local` file: `VITE_REOWN_PROJECT_ID=your_project_id_here`
+
+2. **Install and run**:
 ```bash
 npm install
 npm run dev
 ```
+
+> **Note**: The widget will work with the default demo project ID, but you may see some console warnings. For production, always use your own Reown Project ID.
 
 ### Production
 
