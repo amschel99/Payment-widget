@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { polygon } from '@reown/appkit/networks'
+import { polygon, base, arbitrum, bsc } from '@reown/appkit/networks'
 
 // Reown Project ID - from cloud.reown.com
 const projectId = '99d90105116696e9de1d61526b0e0da0'
@@ -15,7 +15,7 @@ const metadata = {
 
 // Create Wagmi Adapter with custom RPC
 const wagmiAdapter = new WagmiAdapter({
-  networks: [polygon],
+  networks: [polygon, base, arbitrum, bsc],
   projectId,
   ssr: false,
 })
@@ -24,7 +24,7 @@ const wagmiAdapter = new WagmiAdapter({
 export const appKit = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [polygon],
+  networks: [polygon, base, arbitrum, bsc],
   defaultNetwork: polygon,
   metadata,
   features: {

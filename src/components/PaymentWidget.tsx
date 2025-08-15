@@ -3,11 +3,12 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchCh
 import { parseUnits } from 'viem';
 import { InvoiceData } from '../types';
 import { getInvoiceFromUrl, formatAmount, formatAddress } from '../utils/invoice';
-import { getChainConfig, getTokenConfig, isNativeToken } from '../config/chains';
+import { getChainConfig, getTokenConfig, AVAILABLE_CHAINS } from '../config/chains';
 import { Copy, Check, AlertCircle, Wallet, ExternalLink, LogOut } from 'lucide-react';
 
 export default function PaymentWidget() {
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+  const [selectedChain, setSelectedChain] = useState<string>('POLYGON');
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,9 +53,9 @@ export default function PaymentWidget() {
     setError(null);
 
     try {
-      const chainConfig = getChainConfig(invoiceData.chain);
+      const chainConfig = getChainConfig(selectedChain);
       if (!chainConfig) {
-        throw new Error(`Unsupported chain: ${invoiceData.chain}`);
+        throw new Error(`Unsupported chain: ${selectedChain}`);
       }
 
       // Check if we need to switch chains
@@ -63,20 +64,22 @@ export default function PaymentWidget() {
         return; // Function will be called again after chain switch
       }
 
-      if (isNativeToken(invoiceData.chain, invoiceData.token)) {
-        // Handle native token payment (MATIC, ETH, etc.)
-        // For native tokens, we'll use a simple transfer
-        // Note: This would need to be implemented differently for actual native transfers
-        setError('Native token payments not yet implemented in this demo');
-        return;
-      } else {
-        // Handle ERC-20 token payment
-        const tokenConfig = getTokenConfig(invoiceData.chain, invoiceData.token);
-        if (!tokenConfig) {
-          throw new Error(`Token ${invoiceData.token} not supported on ${invoiceData.chain}`);
-        }
+      // Always use USDC for now (can be extended later)
+      const tokenConfig = getTokenConfig(selectedChain, 'USDC');
+      if (!tokenConfig) {
+        throw new Error(`USDC not supported on ${selectedChain}`);
+      }
 
-        const value = parseUnits(invoiceData.amount.toString(), tokenConfig.decimals);
+      console.log('Payment details:', {
+        selectedChain,
+        chainId: chainConfig.id,
+        tokenAddress: tokenConfig.address,
+        tokenSymbol: tokenConfig.symbol,
+        amount: invoiceData.amount,
+        recipient: invoiceData.address
+      });
+
+      const value = parseUnits(invoiceData.amount.toString(), tokenConfig.decimals);
 
         await writeContract({
           address: tokenConfig.address as `0x${string}`,
@@ -95,7 +98,6 @@ export default function PaymentWidget() {
           functionName: 'transfer',
           args: [invoiceData.address as `0x${string}`, value],
         });
-      }
     } catch (err: any) {
       console.error('Payment failed:', err);
       setError(err.message || 'Payment failed. Please try again.');
@@ -133,8 +135,6 @@ export default function PaymentWidget() {
       </div>
     );
   }
-
-  const chainConfig = getChainConfig(invoiceData.chain);
 
   return (
     <div className="min-h-screen bg-[#E9F1F4] flex items-center justify-center p-4">
@@ -199,10 +199,10 @@ export default function PaymentWidget() {
                 {/* Amount */}
                 <div className="mb-4">
                   <div className="text-3xl font-bold mb-1">
-                    {formatAmount(invoiceData.amount)} {invoiceData.token}
+                    {formatAmount(invoiceData.amount)} USDC
                   </div>
                   <div className="text-sm opacity-80">
-                    {chainConfig?.name || invoiceData.chain} Network
+                    {getChainConfig(selectedChain)?.name || selectedChain} Network
                   </div>
                 </div>
                 
@@ -220,6 +220,31 @@ export default function PaymentWidget() {
               
 
             </div>
+          </div>
+
+          {/* Chain Selection */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-[#1F2D3A] mb-3">Choose Payment Network</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {AVAILABLE_CHAINS.map((chain) => (
+                <button
+                  key={chain.key}
+                  onClick={() => setSelectedChain(chain.key)}
+                  className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                    selectedChain === chain.key
+                      ? 'border-[#2E8C96] bg-[#2E8C96]/10 text-[#2E8C96]'
+                      : 'border-[#E9F1F4] bg-white text-[#1F2D3A] hover:border-[#2E8C96]/50'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">{chain.icon}</div>
+                  <div className="text-sm font-medium">{chain.name}</div>
+                  <div className="text-xs opacity-70 mt-1">USDC</div>
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-[#1F2D3A]/60 mt-3 text-center">
+              Same amount ({formatAmount(invoiceData.amount)} USDC) • Same recipient address • Your choice of network
+            </p>
           </div>
 
           {/* Connection Status */}
@@ -305,11 +330,11 @@ export default function PaymentWidget() {
             <div className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-600">Network:</span>
-                <span className="font-mono text-gray-900">{chainConfig?.name || invoiceData.chain}</span>
+                <span className="font-mono text-gray-900">{getChainConfig(selectedChain)?.name || selectedChain}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-600">Token:</span>
-                <span className="font-mono text-gray-900">{invoiceData.token}</span>
+                <span className="font-mono text-gray-900">USDC</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-600">Amount:</span>
@@ -356,7 +381,7 @@ export default function PaymentWidget() {
                 </>
               ) : (
                 <>
-                  Pay {formatAmount(invoiceData.amount)} {invoiceData.token}
+                  Pay {formatAmount(invoiceData.amount)} USDC on {getChainConfig(selectedChain)?.name}
                   <ExternalLink className="w-4 h-4" />
                 </>
               )}
