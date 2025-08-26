@@ -3,6 +3,20 @@ export interface InvoiceData {
   token: string;
   amount: number;
   address: string;
+  userId?: string;
+  projectId?: string;
+}
+
+export interface MpesaPaymentData {
+  shortcode: string;
+  mobile_network: 'Safaricom' | 'Airtel';
+  country_code: 'KES';
+  amount: number;
+  chain: 'BASE';
+  asset: 'USDC';
+  address: string;
+  user_id: string;
+  project_id: string;
 }
 
 // Simple types for the payment widget

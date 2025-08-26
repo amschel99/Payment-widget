@@ -1,4 +1,4 @@
-import { polygon, base, arbitrum, bsc } from 'viem/chains'
+import { polygon, base } from 'viem/chains'
 import type { Chain } from 'viem'
 
 export interface TokenConfig {
@@ -7,6 +7,7 @@ export interface TokenConfig {
   decimals: number;
   name: string;
 }
+
 
 export interface ChainConfig {
   id: number;
@@ -45,19 +46,7 @@ export const BASE_USDC: TokenConfig = {
   name: 'USD Coin'
 };
 
-export const ARBITRUM_USDC: TokenConfig = {
-  symbol: 'USDC',
-  address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-  decimals: 6,
-  name: 'USD Coin'
-};
 
-export const BSC_USDC: TokenConfig = {
-  symbol: 'USDC',
-  address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-  decimals: 18,
-  name: 'Binance-Peg USD Coin'
-};
 
 // Chain configurations mapped by chain name
 export const CHAIN_CONFIGS: Record<string, ChainConfig> = {
@@ -107,52 +96,6 @@ export const CHAIN_CONFIGS: Record<string, ChainConfig> = {
       USDC: BASE_USDC,
     },
   },
-  ARBITRUM: {
-    id: 42161,
-    name: 'Arbitrum One',
-    nativeCurrency: {
-      name: 'Ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    rpcUrls: {
-      default: {
-        http: ['https://arb1.arbitrum.io/rpc/'],
-      },
-    },
-    blockExplorers: {
-      default: {
-        name: 'Arbiscan',
-        url: 'https://arbiscan.io',
-      },
-    },
-    tokens: {
-      USDC: ARBITRUM_USDC,
-    },
-  },
-  BSC: {
-    id: 56,
-    name: 'BSC',
-    nativeCurrency: {
-      name: 'BNB',
-      symbol: 'BNB',
-      decimals: 18,
-    },
-    rpcUrls: {
-      default: {
-        http: ['https://bsc-dataseed1.binance.org/'],
-      },
-    },
-    blockExplorers: {
-      default: {
-        name: 'BscScan',
-        url: 'https://bscscan.com',
-      },
-    },
-    tokens: {
-      USDC: BSC_USDC,
-    },
-  },
 };
 
 // Helper functions
@@ -175,12 +118,10 @@ export function isNativeToken(chainName: string, tokenSymbol: string): boolean {
 }
 
 // Supported chains for wagmi
-export const supportedChains: readonly [Chain, ...Chain[]] = [polygon, base, arbitrum, bsc];
+export const supportedChains: readonly [Chain, ...Chain[]] = [polygon, base];
 
 // All available chains as options for user selection
 export const AVAILABLE_CHAINS = [
-  { key: 'POLYGON', name: 'Polygon', icon: '⬠' },
-  { key: 'BASE', name: 'Base', icon: '🔵' },
-  { key: 'ARBITRUM', name: 'Arbitrum One', icon: '🔷' },
-  { key: 'BSC', name: 'BSC', icon: '🟡' },
+  { key: 'BASE', name: 'Base', icon: '🔵', recommended: true },
+  { key: 'POLYGON', name: 'Polygon', icon: '⬠', recommended: false },
 ] as const;
