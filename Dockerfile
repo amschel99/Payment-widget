@@ -1,27 +1,15 @@
-# Use Node 18 Alpine
 FROM node:18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy source code
 COPY . .
 
-# Build Vite project
 RUN npm run build
-
-# Install serve globally to serve static files
 RUN npm install -g serve
 
-# Expose port 3000 (CapRover default HTTP port)
-EXPOSE 5000
+EXPOSE 3000
 
-# Start the app
-CMD ["serve", "-s", "dist", "-l", "3000", "-H", "0.0.0.0"]
-
+CMD ["serve", "-s", "dist", "--listen", "0.0.0.0:3000"]
