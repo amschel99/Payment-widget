@@ -12,4 +12,5 @@ RUN npm install -g serve
 
 EXPOSE 3000
 
-CMD ["serve", "-s", "dist", "--listen", "0.0.0.0:3000"]
+# Just specify the port; serve will bind to 0.0.0.0 automatically in Docker
+CMD ["serve", "-s", "dist", "-l", "3000"]
