@@ -1,4 +1,4 @@
-import { polygon, base } from 'viem/chains'
+import { base } from 'viem/chains'
 import type { Chain } from 'viem'
 
 export interface TokenConfig {
@@ -32,13 +32,6 @@ export interface ChainConfig {
 }
 
 // USDC contract addresses (all native USDC from Circle)
-export const POLYGON_USDC: TokenConfig = {
-  symbol: 'USDC',
-  address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
-  decimals: 6,
-  name: 'USD Coin'
-};
-
 export const BASE_USDC: TokenConfig = {
   symbol: 'USDC',
   address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
@@ -50,29 +43,6 @@ export const BASE_USDC: TokenConfig = {
 
 // Chain configurations mapped by chain name
 export const CHAIN_CONFIGS: Record<string, ChainConfig> = {
-  POLYGON: {
-    id: 137,
-    name: 'Polygon',
-    nativeCurrency: {
-      name: 'MATIC',
-      symbol: 'MATIC',
-      decimals: 18,
-    },
-    rpcUrls: {
-      default: {
-        http: ['https://polygon-rpc.com/'],
-      },
-    },
-    blockExplorers: {
-      default: {
-        name: 'PolygonScan',
-        url: 'https://polygonscan.com',
-      },
-    },
-    tokens: {
-      USDC: POLYGON_USDC,
-    },
-  },
   BASE: {
     id: 8453,
     name: 'Base',
@@ -118,10 +88,9 @@ export function isNativeToken(chainName: string, tokenSymbol: string): boolean {
 }
 
 // Supported chains for wagmi
-export const supportedChains: readonly [Chain, ...Chain[]] = [polygon, base];
+export const supportedChains: readonly [Chain, ...Chain[]] = [base];
 
 // All available chains as options for user selection
 export const AVAILABLE_CHAINS = [
   { key: 'BASE', name: 'Base', icon: '🔵', recommended: true },
-  { key: 'POLYGON', name: 'Polygon', icon: '⬠', recommended: false },
 ] as const;
