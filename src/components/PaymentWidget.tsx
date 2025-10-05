@@ -179,7 +179,7 @@ export default function PaymentWidget() {
       });
 
       // Redirect to open-ramp page
-      const redirectUrl = `https://app.riftfi.xyz/pay/open-ramp?${queryParams.toString()}`;
+      const redirectUrl = `https://dapp.riftfi.xyz/pay/open-ramp?${queryParams.toString()}`;
       window.location.href = redirectUrl;
     } catch (err: any) {
       console.error('M-Pesa payment failed:', err);
