@@ -127,14 +127,16 @@ export default function PaymentWidget() {
     return `KES ${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   };
 
-  const buildReturnUrl = (baseUrl: string, paramName: string, paramValue: string): string => {
+  const buildReturnUrl = (baseUrl: string, params: Record<string, string>): string => {
+    const entries = Object.entries(params).filter(([, v]) => v != null && v !== '');
     try {
       const url = new URL(baseUrl);
-      url.searchParams.set(paramName, paramValue);
+      entries.forEach(([name, value]) => url.searchParams.set(name, value));
       return url.toString();
     } catch {
       const separator = baseUrl.includes('?') ? '&' : '?';
-      return `${baseUrl}${separator}${encodeURIComponent(paramName)}=${encodeURIComponent(paramValue)}`;
+      const query = entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+      return `${baseUrl}${separator}${query}`;
     }
   };
 
@@ -475,7 +477,10 @@ export default function PaymentWidget() {
                           {invoiceData?.originUrl && (
                             <button
                               onClick={() => {
-                                const returnUrl = buildReturnUrl(invoiceData.originUrl as string, 'hash', hash);
+                                const returnUrl = buildReturnUrl(invoiceData.originUrl as string, {
+                  hash,
+                  ...(invoiceData.orderId && { order_id: invoiceData.orderId }),
+                });
                                 window.location.href = returnUrl;
                               }}
                               className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-[#2E8C96] rounded-lg hover:bg-[#2E8C96]/90 transition-colors"
@@ -635,7 +640,10 @@ export default function PaymentWidget() {
                 {invoiceData?.originUrl && (
                   <button
                     onClick={() => {
-                      const returnUrl = buildReturnUrl(invoiceData.originUrl as string, 'transaction_code', transactionCode);
+                      const returnUrl = buildReturnUrl(invoiceData.originUrl as string, {
+                      transaction_code: transactionCode,
+                      ...(invoiceData.orderId && { order_id: invoiceData.orderId }),
+                    });
                       window.location.href = returnUrl;
                     }}
                     className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-[#2E8C96] rounded-lg hover:bg-[#2E8C96]/90 transition-colors"
