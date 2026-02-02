@@ -6,11 +6,12 @@ export interface InvoiceData {
   userId?: string;
   projectId?: string;
   exchangeRate?: number;
+  originUrl?: string;
 }
 
 export interface MpesaPaymentData {
   shortcode: string;
-  mobile_network: 'Safaricom' | 'Airtel';
+  mobile_network: 'Safaricom';
   country_code: 'KES';
   amount: number;
   chain: 'BASE';
