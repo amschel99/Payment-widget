@@ -37,9 +37,24 @@ export default function PaymentWidget() {
     }
   }, []);
 
-  // Auto-redirect for USDC payment after transaction is confirmed
+  // Verify crypto payment with backend and auto-redirect after confirmation
   useEffect(() => {
-    if (isConfirmed && hash && invoiceData?.originUrl) {
+    if (!isConfirmed || !hash) return;
+
+    // If this is an invoice payment, notify the backend
+    if (invoiceData?.invoiceId) {
+      fetch('https://payment.riftfi.xyz/invoices/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          invoiceId: invoiceData.invoiceId,
+          transactionHash: hash,
+          chain: selectedChain,
+        }),
+      }).catch((err) => console.error('Failed to verify invoice payment:', err));
+    }
+
+    if (invoiceData?.originUrl) {
       const returnUrl = buildReturnUrl(invoiceData.originUrl, {
         hash,
         ...(invoiceData.orderId && { order_id: invoiceData.orderId }),
@@ -48,10 +63,10 @@ export default function PaymentWidget() {
       const redirectTimer = setTimeout(() => {
         window.location.href = returnUrl;
       }, 2000);
-      
+
       return () => clearTimeout(redirectTimer);
     }
-  }, [isConfirmed, hash, invoiceData?.originUrl, invoiceData?.orderId]);
+  }, [isConfirmed, hash, invoiceData?.invoiceId, invoiceData?.originUrl, invoiceData?.orderId, selectedChain]);
 
   // Auto-redirect for M-Pesa payment after transaction code is received
   useEffect(() => {
@@ -226,7 +241,8 @@ export default function PaymentWidget() {
         country_code: paymentData.country_code,
         address: paymentData.address,
         user_id: paymentData.user_id,
-        project_id: paymentData.project_id
+        project_id: paymentData.project_id,
+        ...(invoiceData.invoiceId && { invoice_id: invoiceData.invoiceId }),
       });
 
       const redirectUrl = `https://payment.riftfi.xyz/pay/open-ramp?${queryParams.toString()}`;

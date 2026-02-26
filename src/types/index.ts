@@ -3,6 +3,7 @@ export interface InvoiceData {
   token: string;
   amount: number;
   address: string;
+  invoiceId?: string;
   userId?: string;
   projectId?: string;
   orderId?: string;
